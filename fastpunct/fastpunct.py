@@ -4,8 +4,10 @@ Created on Sun May 10 15:46:01 2020
 
 @author: harikodali
 """
-
+import os
 import pickle
+import pydload
+
 import numpy as np
 
 from tensorflow.keras.models import Model
@@ -108,20 +110,64 @@ def decode(model, parameters, input_texts, allowed_extras, batch_size):
     outputs = [out_dict[text] for text in input_texts_c]
     return outputs
 
+
+model_links = {
+            'en': {
+                    'checkpoint': 'https://github.com/notAI-tech/fastPunct/releases/download/checkpoint-release/fastpunct_eng_weights.h5',
+                    'params': 'https://github.com/notAI-tech/fastPunct/releases/download/checkpoint-release/parameter_dict.pkl'
+                },
+            
+            }
+
+lang_code_mapping = {
+    'english': 'en',
+    'french': 'fr',
+    'italian': 'it'
+}
+
 class FastPunct():
     model = None
     parameters = None
-    def __init__(self, params_path="parameter_dict.pkl", weights_path="fastpunct_eng_weights.h5"):
+    def __init__(self, lang_code="en", weights_path=None, params_path=None):
+        if lang_code not in model_links and lang_code in lang_code_mapping:
+            lang_code = lang_code_mapping[lang_code]
+                
+        if lang_code not in model_links:
+            print("fastPunct doesn't support '" + lang_code + "' yet.")
+            print("Please raise a issue at https://github.com/notai-tech/fastPunct/ to add this language into future checklist.")
+            return None
+        
+        home = os.path.expanduser("~")
+        lang_path = os.path.join(home, '.fastPunct_' + lang_code)
+        weights_path = os.path.join(lang_path, 'checkpoint')
+        params_path = os.path.join(lang_path, 'params')
+
+        if not os.path.exists(lang_path):
+            os.mkdir(lang_path)
+
+        if not os.path.exists(weights_path):
+            print('Downloading checkpoint', model_links[lang_code]['checkpoint'], 'to', weights_path)
+            pydload.dload(url=model_links[lang_code]['checkpoint'], save_to_path=weights_path, max_time=None)
+
+        if not os.path.exists(params_path):
+            print('Downloading model params', model_links[lang_code]['params'], 'to', params_path)
+            pydload.dload(url=model_links[lang_code]['params'], save_to_path=params_path, max_time=None)
+
+
         with open(params_path, "rb") as file:
             self.parameters = pickle.load(file)
         self.model = get_model_instance(self.parameters)
         self.model.load_weights(weights_path)
         self.allowed_extras = get_extra_chars(self.parameters)
     
-    def predict(self, input_texts, batch_size=512):
+    def punct(self, input_texts, batch_size=32):
         return decode(self.model, self.parameters, input_texts, self.allowed_extras, batch_size)
+
+    def fastpunct(self, input_texts, batch_size=32):
+        # To be implemented
+        return None
     
     
 if __name__ == "__main__":
     fastpunct = FastPunct()
-    print(fastpunct.predict(["call haris mom", "oh i thought you were here", "where are you going", "in theory everyone knows what a comma is", "hey how are you doing", "my name is sheela i am in love with hrithik"]))
+    print(fastpunct.punct(["call haris mom", "oh i thought you were here", "where are you going", "in theory everyone knows what a comma is", "hey how are you doing", "my name is sheela i am in love with hrithik"]))
