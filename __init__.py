@@ -1,0 +1,1 @@
+from .fastpunct import FastPunct
