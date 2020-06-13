@@ -18,7 +18,7 @@ from tensorflow.keras.utils import to_categorical
 def get_text_encodings(texts, parameters):
 
     enc_seq = parameters["enc_token"].texts_to_sequences(texts)
-    pad_seq = pad_sequences(enc_seq, maxlen=min(parameters["max_encoder_seq_length"], max([len(txt) for txt in texts])),
+    pad_seq = pad_sequences(enc_seq, maxlen=parameters["max_encoder_seq_length"],
                             padding='post')
     pad_seq = to_categorical(pad_seq, num_classes=parameters["enc_vocab_size"])
     return pad_seq
@@ -29,7 +29,7 @@ def get_extra_chars(parameters):
     for d_c, d_i in parameters["dec_token"].word_index.items():
         if d_c.lower() not in parameters["enc_token"].word_index:
             allowed_extras.append(d_i)
-    return allowed_extras + [0]
+    return allowed_extras
 
 def get_model_instance(parameters):
 
@@ -74,24 +74,32 @@ def decode(model, parameters, input_texts, allowed_extras, batch_size):
     target_seq_hot = to_categorical(target_seq, num_classes=parameters["dec_vocab_size"])
 
     extra_char_count = [0]*len(input_texts)
+    prev_char_index = [0]*len(input_texts)
     i = 0
     while len(input_texts) != 0:
         curr_char_index  = [i - extra_char_count[j] for j in range(len(input_texts))]
         input_encodings = np.argmax(input_sequences, axis=2)
-        cur_inp_list = [input_encodings[_][curr_char_index[_]] for _ in range(len(input_texts))]
+
+        cur_inp_list = [input_encodings[_][curr_char_index[_]] if curr_char_index[_] < len(input_texts[_]) else 0 for _ in range(len(input_texts))]
         output_tokens = model.predict([input_sequences, target_seq_hot], batch_size=batch_size)
         sampled_possible_indices = np.argsort(output_tokens[:, i, :])[:, ::-1].tolist()
         sampled_token_indices = []
         for j, per_char_list in enumerate(sampled_possible_indices):
             for index in per_char_list:
                 if index in allowed_extras:
+                    if parameters["reverse_dec_dict"][index] == '\n' and cur_inp_list[j] != 0:
+                        continue
+                    elif parameters["reverse_dec_dict"][index] != '\n' and prev_char_index[j] in allowed_extras:
+                        continue
                     sampled_token_indices.append(index)
                     extra_char_count[j] += 1
                     break
                 elif parameters["enc_token"].word_index[parameters["reverse_dec_dict"][index].lower()] == cur_inp_list[j]:
                     sampled_token_indices.append(index)
                     break
+
         sampled_chars = [parameters["reverse_dec_dict"][index] for index in sampled_token_indices]
+
         outputs = [outputs[j] + sampled_chars[j] for j, output in enumerate(outputs)]
         end_indices = sorted([index for index, char  in enumerate(sampled_chars) if char == '\n'], reverse=True)
         for index in end_indices:
@@ -106,6 +114,7 @@ def decode(model, parameters, input_texts, allowed_extras, batch_size):
             break
         target_seq[:,i+1] = sampled_token_indices
         target_seq_hot = to_categorical(target_seq, num_classes=parameters["dec_vocab_size"])
+        prev_char_index = sampled_token_indices
         i += 1
     outputs = [out_dict[text] for text in input_texts_c]
     return outputs
@@ -156,6 +165,7 @@ class FastPunct():
 
         with open(params_path, "rb") as file:
             self.parameters = pickle.load(file)
+        self.parameters["reverse_enc_dict"] = {i:c for c, i in self.parameters["enc_token"].word_index.items()}
         self.model = get_model_instance(self.parameters)
         self.model.load_weights(weights_path)
         self.allowed_extras = get_extra_chars(self.parameters)
@@ -167,7 +177,6 @@ class FastPunct():
         # To be implemented
         return None
     
-    
 if __name__ == "__main__":
     fastpunct = FastPunct()
-    print(fastpunct.punct(["call haris mom", "oh i thought you were here", "where are you going", "in theory everyone knows what a comma is", "hey how are you doing", "my name is sheela i am in love with hrithik"]))
+    print(fastpunct.punct(["oh i thought you were here", "in theory everyone knows what a comma is", "hey how are you doing", "my name is sheela i am in love with hrithik"]))
