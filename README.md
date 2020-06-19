@@ -1,4 +1,5 @@
 # fastPunct : Fast and accurate punctuation restoration with sequence to sequence networks.
+[![Downloads](https://pepy.tech/badge/fastpunct/week)](https://pepy.tech/project/fastpunct/week)
 
 # Installation:
 ```bash
