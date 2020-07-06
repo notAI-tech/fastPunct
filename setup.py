@@ -18,7 +18,7 @@ URL = 'https://github.com/notAI-tech/fastPunct'
 EMAIL = 'kodalihari.619@gmail.com'
 AUTHOR = 'Hari Krishna Sai Kodali'
 REQUIRES_PYTHON = '>=3.5.0'
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
