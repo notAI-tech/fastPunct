@@ -171,6 +171,7 @@ class FastPunct():
         self.allowed_extras = get_extra_chars(self.parameters)
     
     def punct(self, input_texts, batch_size=32):
+        input_texts = [text.lower() for text in input_texts]
         return decode(self.model, self.parameters, input_texts, self.allowed_extras, batch_size)
 
     def fastpunct(self, input_texts, batch_size=32):
