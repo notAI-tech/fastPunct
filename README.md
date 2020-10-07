@@ -19,3 +19,5 @@ fastpunct.punct(["oh i thought you were here", "in theory everyone knows what a 
 # ['Oh! I thought you were here.', 'In theory, everyone knows what a comma is.', 'Hey! How are you doing?', 'My name is Sheela. I am in love with Hrithik.']
 
 ```
+# Note:
+maximum length of input currently supported - 400
