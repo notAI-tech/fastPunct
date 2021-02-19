@@ -148,11 +148,12 @@ class FastPunct():
         
         home = os.path.expanduser("~")
         lang_path = os.path.join(home, '.fastPunct_' + lang_code)
-        weights_path = os.path.join(lang_path, 'checkpoint.h5')
-        params_path = os.path.join(lang_path, 'params.pkl')
+        if (weights_path is None) or (params_path is None):
+            weights_path = os.path.join(lang_path, 'checkpoint.h5')
+            params_path = os.path.join(lang_path, 'params.pkl')
 
-        if not os.path.exists(lang_path):
-            os.mkdir(lang_path)
+            if not os.path.exists(lang_path):
+                os.mkdir(lang_path)
 
         if not os.path.exists(weights_path):
             print('Downloading checkpoint', model_links[lang_code]['checkpoint'], 'to', weights_path)
