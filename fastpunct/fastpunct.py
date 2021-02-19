@@ -148,10 +148,13 @@ class FastPunct():
         
         home = os.path.expanduser("~")
         lang_path = os.path.join(home, '.fastPunct_' + lang_code)
-        if (weights_path is None) or (params_path is None):
+        if weights_path is None:
             weights_path = os.path.join(lang_path, 'checkpoint.h5')
+        if params_path is None:
             params_path = os.path.join(lang_path, 'params.pkl')
-
+        
+        #if either of the paths are not mentioned, then, make lang directory from home
+        if (params_path is None) or (weights_path is None):
             if not os.path.exists(lang_path):
                 os.mkdir(lang_path)
 
