@@ -7,6 +7,7 @@
 import io
 import os
 import sys
+import subprocess
 from shutil import rmtree
 
 from setuptools import find_packages, setup, Command
@@ -18,7 +19,7 @@ URL = 'https://github.com/notAI-tech/fastPunct'
 EMAIL = 'kodalihari.619@gmail.com'
 AUTHOR = 'Hari Krishna Sai Kodali'
 REQUIRES_PYTHON = '>=3.5.0'
-VERSION = '1.0.2'
+VERSION = subprocess.run(['git', 'describe', '--tags'], stdout=subprocess.PIPE).stdout.decode("utf-8").strip()
 
 # What packages are required for this module to be executed?
 REQUIRED = [
