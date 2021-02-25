@@ -7,17 +7,14 @@ pip install --upgrade fastpunct
 ```
 
 # Supported languages:
-en - english
+english
 
 # Usage:
 
 ```python
 from fastpunct import FastPunct
-# The default language is 'en'
-fastpunct = FastPunct('en')
-fastpunct.punct(["oh i thought you were here", "in theory everyone knows what a comma is", "hey how are you doing", "my name is sheela i am in love with hrithik"], batch_size=32)
-# ['Oh! I thought you were here.', 'In theory, everyone knows what a comma is.', 'Hey! How are you doing?', 'My name is Sheela. I am in love with Hrithik.']
-
+# The default language is 'english'
+fastpunct = FastPunct()
+fastpunct.punct(["john smiths dog is creating a ruccus", "ys jagan is the chief minister of andhra pradesh", "we visted new york last year in may"])
+# ["John Smith's dog is creating a ruccus.", 'Ys Jagan is the chief minister of Andhra Pradesh.', 'We visted New York last year in May.']
 ```
-# Note:
-maximum length of input currently supported - 400
