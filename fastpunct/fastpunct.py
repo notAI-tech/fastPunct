@@ -1,5 +1,6 @@
 import os
 import torch
+import logging
 import pydload
 from transformers import T5Tokenizer, T5ForConditionalGeneration
 
@@ -23,7 +24,7 @@ class FastPunct:
         model_name = language.lower()
 
         if model_name not in MODEL_URLS:
-            print(f"model_name should be one of {list(MODEL_URLS.keys())}")
+            logging.warn(f"model_name should be one of {list(MODEL_URLS.keys())}")
             return None
 
         home = os.path.expanduser("~")
@@ -39,7 +40,7 @@ class FastPunct:
             file_path = os.path.join(lang_path, file_name)
             if os.path.exists(file_path):
                 continue
-            print(f"Downloading {file_name}")
+            logging.info(f"Downloading {file_name}")
             pydload.dload(url=url, save_to_path=file_path, max_time=None)
 
         self.tokenizer = T5Tokenizer.from_pretrained(lang_path)
@@ -48,8 +49,11 @@ class FastPunct:
         )
 
         if torch.cuda.is_available():
-            print(f"Using GPU")
+            logging.info(f"Using GPU")
             self.model = self.model.cuda()
+        
+        logging.info("Warming up")
+        self.punct(["i am batman"])
 
     def punct(
         self, sentences, beam_size=1, max_len=None, correct=False
