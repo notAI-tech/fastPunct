@@ -1,4 +1,4 @@
-# fastPunct : Fast and accurate punctuation restoration with sequence to sequence networks.
+# fastPunct : Punctuation restoration and spell correction experiments.
 [![Downloads](https://pepy.tech/badge/fastpunct)](https://pepy.tech/project/fastpunct)
 
 # Installation:
