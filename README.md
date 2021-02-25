@@ -26,7 +26,6 @@ fastpunct.punct([
 # 'We visted New York last year in May.']
 
 # punctuation correction with optional spell correction (experimental)
-fastpunct.punct([], correct=True)
 
 fastpunct.punct([
                   'johns son peter is marring estella in jun',
