@@ -11,6 +11,7 @@ english
 
 # Usage:
 
+***As a python module***
 ```python
 from fastpunct import FastPunct
 # The default language is 'english'
@@ -35,3 +36,15 @@ fastpunct.punct([
 # 'Kamal Hassan is a good actor.']
 
 ```
+
+***As a docker container***
+```bash
+# Start the docker container
+docker run -it -p8080:8080 -eBATCH_SIZE=4 notaitech/fastpunct:english
+
+# Run prediction
+curl -d '{"data": ["i was hungry i ordered a pizza my name is batman"]}' -H "Content-Type: application/json" "http://localhost:8080/sync"
+
+# {"prediction": ["I was hungry, I ordered a pizza, my name is Batman."], "success": true}
+```
+
