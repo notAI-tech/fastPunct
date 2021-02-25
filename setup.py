@@ -14,18 +14,15 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'fastpunct'
-DESCRIPTION = 'Punctuation restoration with sequence to sequence networks'
+DESCRIPTION = 'Punctuation restoration and spell correction.'
 URL = 'https://github.com/notAI-tech/fastPunct'
 EMAIL = 'kodalihari.619@gmail.com'
 AUTHOR = 'Hari Krishna Sai Kodali'
-REQUIRES_PYTHON = '>=3.5.0'
+REQUIRES_PYTHON = '>=3.6.0'
 VERSION = subprocess.run(['git', 'describe', '--tags'], stdout=subprocess.PIPE).stdout.decode("utf-8").strip()
 
 # What packages are required for this module to be executed?
-REQUIRED = [
-    'numpy',
-    'pydload'
-]
+REQUIRED = ["transformers>=4.0.0rc1", "pydload>=1.0.9", "torch>=1.5.0", "sentencepiece"]
 
 # What packages are optional?
 EXTRAS = {
